@@ -1,13 +1,12 @@
 // app.js - FINAL COMPLETO: Incluye CRUD, Módulos, Formato de Fecha, Dirigido A, Beneficios, 
-//          Horario Interactivo por Modalidad, y Carga Dinámica de Reserva de Matrícula (SPA).
+//          Horario Interactivo por Modalidad, y Solución al error de carga SPA.
 
 let currentEditId = null;
 let allProgramas = []; 
 let isDragging = false, startPos = 0, scrollLeft = 0; 
 let currentModulos = []; 
 
-// NUEVO: Variables de estado para la lógica de SPA y Horario
-let isReservaLoaded = false;
+// Variables de estado para la lógica de Horario
 const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 let selectedOnlineDays = []; // Para Semipresencial
 let selectedPresencialDays = []; // Para Semipresencial
@@ -50,7 +49,6 @@ function decimalToTime(decimalHour) {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     
-    // Ajuste para 00:00
     const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
     const ampm = hours >= 12 && hours < 24 ? 'PM' : 'AM';
     const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
@@ -93,13 +91,12 @@ function formatTimeInput(input) {
 
 
 // =================================================================
-// 1. MANEJO DE VISTAS (SPA) Y CARGA DINÁMICA
+// 1. MANEJO DE VISTAS (SPA)
 // =================================================================
 function showSection(sectionId, isNew = false) {
     document.querySelectorAll('.spa-section').forEach(s => s.style.display = 'none');
     
-    // Asegurar que el contenedor externo de reserva esté oculto si navegamos a otra sección
-    document.getElementById('reserva-container').style.display = 'none'; 
+    // NOTA: Se eliminó la lógica de carga dinámica de 'reserva-container'
     
     const targetSection = document.getElementById(sectionId);
     if(targetSection) {
@@ -114,43 +111,11 @@ function showSection(sectionId, isNew = false) {
             document.getElementById('adminFormTitle').innerHTML = 'Crear Nuevo Programa';
             document.getElementById('adminForm').reset();
             document.getElementById('adminModalidad').value = 'Presencial'; 
-            toggleHorarioFields(); // Reinicia la interfaz de horario
+            toggleHorarioFields(); 
         }
     }
     if (sectionId === 'admin-dashboard') loadAdminList();
     if (sectionId === 'catalogo') cargarProgramas();
-}
-
-// NUEVA FUNCIÓN: Carga y muestra el formulario de reserva (Velocidad y Experiencia SPA)
-function loadReservaSection() {
-    document.querySelectorAll('.spa-section').forEach(s => s.style.display = 'none');
-
-    const container = document.getElementById('reserva-container');
-
-    if (isReservaLoaded) {
-        // Si ya está cargado, simplemente lo mostramos (SPA rápido)
-        container.style.display = 'block';
-        return;
-    }
-
-    // Mostrar spinner de carga si es la primera vez
-    container.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-acento"></div><p>Cargando formulario...</p></div>';
-    container.style.display = 'block';
-
-    // Usar Fetch para cargar el contenido de reserva.html
-    fetch('reserva.html')
-        .then(response => {
-            if (!response.ok) throw new Error('Error al cargar reserva.html');
-            return response.text();
-        })
-        .then(html => {
-            container.innerHTML = html;
-            isReservaLoaded = true; // Marcar como cargado
-        })
-        .catch(error => {
-            console.error('Error SPA loading:', error);
-            container.innerHTML = '<div class="alert alert-danger mx-auto my-5">Error: No se pudo cargar el formulario de Reserva.</div>';
-        });
 }
 
 
@@ -332,7 +297,7 @@ function mostrarDetalle(id) {
 }
 
 // =================================================================
-// 6. LÓGICA DE HORARIO INTERACTIVO
+// 5. LÓGICA DE HORARIO INTERACTIVO
 // =================================================================
 
 // Función auxiliar para obtener el array correcto basado en el ID del contenedor
@@ -526,7 +491,7 @@ function generateHorarioString() {
 
 
 // =================================================================
-// 7. ADMIN CRUD
+// 6. ADMIN CRUD
 // =================================================================
 function loadAdminList() {
     db.collection('programas').get().then(snap => {
@@ -575,7 +540,6 @@ function cargarProgramaParaEdicion(id) {
         const modalidadSelect = document.getElementById('adminModalidad');
         modalidadSelect.value = p.modalidad || 'Presencial'; 
         
-        // Asignar el valor de horario al input simple (para que se muestre en el fallback)
         document.getElementById('simpleHorarioInput').value = p.horario || '';
         document.getElementById('adminHorario').value = p.horario || ''; 
         
@@ -649,6 +613,5 @@ document.addEventListener('DOMContentLoaded', () => {
         g.addEventListener('mousemove', e => { if(!isDragging)return; e.preventDefault(); g.scrollLeft = scrollLeft - (e.clientX - startPos); });
     }
     
-    // Inicializamos la interfaz de horario para el modo Presencial (por defecto)
     toggleHorarioFields(); 
 });
