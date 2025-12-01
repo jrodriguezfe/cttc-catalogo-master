@@ -24,7 +24,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('catalogo')">Programas</a></li>
                     
-                    <li class="nav-item"><a class="nav-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfeKwQK24hzJGZCm1cb-SVCPbo-QOZp-dFlv--QLH5yvI3i9w/viewform?usp=sharing&ouid=118413093374969734931" target="_blank">Reserva de Matrícula</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://docs.google.com/forms/d/REEMPLAZAR_CON_TU_URL_DE_FORMULARIO_AQUI/viewform" target="_blank">Reserva de Matrícula</a></li>
                     
                     <li class="nav-item ms-lg-3">
                         <button id="adminAuthButton" class="btn btn-dark" onclick="handleAdminAuth()">
@@ -261,31 +261,71 @@
                             </div>
 
                             <div id="horarioOnlineGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                                 <p class="small fw-bold text-muted mb-1">Configuración Online:</p>
-                                 <div id="onlineSimpleDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                 <p class="small fw-bold text-muted mb-1">Configuración Online (Doble Bloque):</p>
                                  
-                                 <div class="input-group input-group-sm mb-2">
-                                    <span class="input-group-text">De</span>
-                                    <input type="number" id="onlineSimpleStartHour" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                    <span class="input-group-text">A</span>
-                                    <input type="number" id="onlineSimpleEndHour" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineSimpleStartHour', 0.25)">+</button>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour', 0.25)">-</button>
-                                 </div>
+                                 <h6 class="text-acento mt-2">Bloque 1 (Ej: Noches)</h6>
+                                 <div class="mb-3">
+                                    <label class="form-label small fw-bold">Horario Online (Días):</label>
+                                    <div id="onlineSimpleDaysContainer1" class="d-flex flex-wrap mb-2"></div>
+                                     
+                                     <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">De</span>
+                                        <input type="number" id="onlineSimpleStartHour1" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <span class="input-group-text">A</span>
+                                        <input type="number" id="onlineSimpleEndHour1" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineSimpleStartHour1', 0.25)">+</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour1', 0.25)">-</button>
+                                     </div>
+                                </div>
+
+                                 <h6 class="text-acento mt-4">Bloque 2 (Ej: Fines de Semana)</h6>
+                                 <div class="mb-3">
+                                    <label class="form-label small fw-bold">Horario Online (Días):</label>
+                                    <div id="onlineSimpleDaysContainer2" class="d-flex flex-wrap mb-2"></div>
+                                     
+                                     <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">De</span>
+                                        <input type="number" id="onlineSimpleStartHour2" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <span class="input-group-text">A</span>
+                                        <input type="number" id="onlineSimpleEndHour2" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineSimpleStartHour2', 0.25)">+</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour2', 0.25)">-</button>
+                                     </div>
+                                </div>
                             </div>
 
                             <div id="horarioPresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                                 <p class="small fw-bold text-muted mb-1">Configuración Presencial:</p>
-                                 <div id="presencialSimpleDaysContainer" class="d-flex flex-wrap mb-2"></div>
-                                 
-                                 <div class="input-group input-group-sm mb-2">
-                                    <span class="input-group-text">De</span>
-                                    <input type="number" id="presencialSimpleStartHour" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                    <span class="input-group-text">A</span>
-                                    <input type="number" id="presencialSimpleEndHour" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialSimpleStartHour', 0.25)">+</button>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour', 0.25)">-</button>
-                                 </div>
+                                 <p class="small fw-bold text-muted mb-1">Configuración Presencial (Doble Bloque):</p>
+
+                                 <h6 class="text-acento mt-2">Bloque 1 (Ej: Noches)</h6>
+                                 <div class="mb-3">
+                                    <label class="form-label small fw-bold">Horario Presencial (Días):</label>
+                                    <div id="presencialSimpleDaysContainer1" class="d-flex flex-wrap mb-2"></div>
+                                     
+                                     <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">De</span>
+                                        <input type="number" id="presencialSimpleStartHour1" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <span class="input-group-text">A</span>
+                                        <input type="number" id="presencialSimpleEndHour1" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialSimpleStartHour1', 0.25)">+</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour1', 0.25)">-</button>
+                                     </div>
+                                </div>
+
+                                 <h6 class="text-acento mt-4">Bloque 2 (Ej: Fines de Semana)</h6>
+                                 <div class="mb-3">
+                                    <label class="form-label small fw-bold">Horario Presencial (Días):</label>
+                                    <div id="presencialSimpleDaysContainer2" class="d-flex flex-wrap mb-2"></div>
+                                     
+                                     <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">De</span>
+                                        <input type="number" id="presencialSimpleStartHour2" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <span class="input-group-text">A</span>
+                                        <input type="number" id="presencialSimpleEndHour2" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialSimpleStartHour2', 0.25)">+</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour2', 0.25)">-</button>
+                                     </div>
+                                </div>
                             </div>
 
                             <input type="text" id="simpleHorarioInput" class="form-control mt-2" placeholder="Ej: Lun-Vie 6pm" onkeyup="generateHorarioString()">
@@ -308,8 +348,8 @@
             </div>
         </section>
         
-        </main>
-    
+    </main>
+
     <a href="https://wa.me/51954622231" class="whatsapp-float" target="_blank"><i class="bi bi-whatsapp"></i></a>
 
     <footer class="site-footer">
