@@ -17,18 +17,13 @@
             <a class="navbar-brand d-flex align-items-center" href="#" onclick="showSection('catalogo')">
                 <img src="images/logo-cttc.jpg" alt="Logo CTTC-SENATI" style="height: 65px; margin-right: 10px;">
             </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('catalogo')">Programas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('contacto')">Contacto</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('catalogo')">Programas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="loadReservaSection()">Reserva de Matrícula</a></li>
                     <li class="nav-item ms-lg-3">
                         <button id="adminAuthButton" class="btn btn-dark" onclick="handleAdminAuth()">
                             <i class="bi bi-person-circle me-1"></i> Admin CTTC
@@ -46,7 +41,7 @@
             
             <div class="row mb-4">
                 <div class="col-lg-8 mb-3">
-                    <input type="text" id="buscador" class="form-control form-control-lg" placeholder="Buscar por título, descripción o palabra clave..." onkeyup="filtrarProgramas()">
+                    <input type="text" id="buscador" class="form-control form-control-lg" placeholder="Buscar por título..." onkeyup="filtrarProgramas()">
                 </div>
                 <div class="col-lg-4 mb-3">
                     <select id="filtroCategoria" class="form-select form-select-lg" onchange="filtrarProgramas()">
@@ -57,80 +52,42 @@
                     </select>
                 </div>
             </div>
-
             <hr>
-
             <div class="gallery-container-wrapper">
                 <button class="gallery-nav-btn left" onclick="scrollGallery(-1)"><i class="bi bi-chevron-left"></i></button>
-                <div id="programas-container" class="horizontal-gallery">
-                    </div>
+                <div id="programas-container" class="horizontal-gallery"></div>
                 <button class="gallery-nav-btn right" onclick="scrollGallery(1)"><i class="bi bi-chevron-right"></i></button>
             </div>
         </section>
 
-        <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="detalleModalLabel"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div id="detalle-contenido"></div>
                     </div>
-                    <div class="modal-footer justify-content-start" id="detalle-footer">
-                    </div>
+                    <div class="modal-footer justify-content-start" id="detalle-footer"></div>
                 </div>
             </div>
         </div>
 
-        <section id="contacto" class="spa-section" style="display:none;">
-            <h2 class="mb-4 display-5">Contáctanos Ágilmente</h2>
-            <div class="row">
-                <div class="col-lg-8">
-                    <p class="lead">Completa el formulario y te contactaremos a la brevedad para brindarte información sobre el programa de tu interés.</p>
-                    <div class="card p-4 shadow-sm">
-                        <form id="contactoForm" action="https://formspree.io/f/yourformid" method="POST" target="_blank">
-                            <h4 class="mb-4">Formulario de Contacto</h4>
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre Completo</label>
-                                <input type="text" class="form-control" id="nombre" name="Nombre" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control" id="email" name="Email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" id="telefono" name="Teléfono" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="programaInteres" class="form-label">Programa de Interés</label>
-                                <input type="text" class="form-control" id="programaInteres" name="Programa de Interés" placeholder="Ej: Diseño de Estampados" required>
-                            </div>
-                            <button type="submit" class="btn btn-acento w-100 mt-3">Enviar Solicitud</button>
-                            <small class="form-text text-muted mt-2">
-                                Nota: Reemplace 'yourformid' con su ID real de Formspree o un endpoint de backend.
-                            </small>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
         <section id="login" class="spa-section" style="display:none;">
             <div class="row justify-content-center">
                 <div class="col-md-6 col-lg-4">
-                    <h2 class="mb-4 display-5 text-center">Acceso <span class="text-acento">Administrador</span></h2>
+                    <h2 class="mb-4 display-5 text-center">Acceso <span class="text-acento">Admin</span></h2>
                     <div class="card p-4 shadow">
                         <div id="authMessage" class="alert alert-danger" style="display:none;"></div>
                         <form id="loginForm" onsubmit="event.preventDefault(); loginAdmin()">
                             <div class="mb-3">
-                                <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                                <label class="form-label">Correo</label>
                                 <input type="email" class="form-control" id="loginEmail" required>
                             </div>
                             <div class="mb-4">
-                                <label for="loginPassword" class="form-label">Contraseña</label>
+                                <label class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="loginPassword" required>
                             </div>
                             <button type="submit" class="btn btn-dark w-100">Iniciar Sesión</button>
@@ -141,38 +98,34 @@
         </section>
 
         <section id="admin-dashboard" class="spa-section" style="display:none;">
-            <h2 class="mb-4 display-5">Panel de <span class="text-acento">Administración CTTC</span></h2>
+            <h2 class="mb-4 display-5">Panel <span class="text-acento">Admin CTTC</span></h2>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <p class="lead">Gestione todos los programas publicados.</p>
+                <p class="lead">Gestión de programas.</p>
                 <button class="btn btn-acento" onclick="showSection('admin-form', true)">
-                    <i class="bi bi-plus-circle me-1"></i> Crear Nuevo Programa
+                    <i class="bi bi-plus-circle me-1"></i> Crear Nuevo
                 </button>
             </div>
-
             <div class="card p-4 shadow-sm">
-                <h4 class="mb-3">Programas Registrados</h4>
-                <div id="admin-list-container" class="table-responsive">
-                    </div>
+                <div id="admin-list-container" class="table-responsive"></div>
             </div>
         </section>
 
         <section id="admin-form" class="spa-section" style="display:none;">
             <a href="#" onclick="showSection('admin-dashboard')" class="text-decoration-none d-block mb-3">
-                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                <i class="bi bi-arrow-left"></i> Volver
             </a>
-            <h2 class="mb-4 display-5" id="adminFormTitle">Gestión de Programa <span class="text-acento"></span></h2>
-            <p class="lead">Usa esta interfaz para crear nuevos programas o cargar uno existente para su edición.</p>
+            <h2 class="mb-4 display-5" id="adminFormTitle">Gestión de Programa</h2>
             
             <div class="card p-4 shadow-sm">
                 <form id="adminForm">
                     <h4 class="mb-3 text-acento">Datos Básicos</h4>
                     <div class="mb-3">
-                        <label for="adminTitulo" class="form-label">Título del Programa</label>
+                        <label class="form-label">Título</label>
                         <input type="text" class="form-control" id="adminTitulo" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="adminCategoria" class="form-label">Categoría</label>
+                            <label class="form-label">Categoría</label>
                             <select class="form-select" id="adminCategoria" required>
                                 <option value="Diseño">Diseño</option>
                                 <option value="Confección">Confección</option>
@@ -180,7 +133,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="adminEstado" class="form-label">Estado</label>
+                            <label class="form-label">Estado</label>
                             <select class="form-select" id="adminEstado" required>
                                 <option value="Activo">Activo</option>
                                 <option value="Inactivo">Inactivo</option>
@@ -188,73 +141,186 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <label for="adminImagenUrl" class="form-label">URL de Imagen Representativa</label>
-                        <input type="url" class="form-control" id="adminImagenUrl" required>
+                        <label class="form-label">URL de Imagen</label>
+                        <input type="url" class="form-control" id="adminImagenUrl" placeholder="https://..." required>
+                        <small class="text-muted">Pegue el enlace directo de la imagen (debe empezar con https://).</small>
                     </div>
 
-                    <h4 class="mb-3 text-acento">Descripción y Contenido</h4>
+                    <h4 class="mb-3 text-acento">Contenido</h4>
                     <div class="mb-3">
-                        <label for="adminDescripcion" class="form-label">Descripción Corta (Para la tarjeta)</label>
+                        <label class="form-label">Descripción Corta</label>
                         <textarea class="form-control" id="adminDescripcion" rows="2" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="adminDescripcionDetallada" class="form-label">Descripción Detallada (Para el modal)</label>
+                        <label class="form-label">Descripción Detallada</label>
                         <textarea class="form-control" id="adminDescripcionDetallada" rows="3"></textarea>
                     </div>
                     <div class="mb-4">
-                        <label for="adminContenido" class="form-label">Contenido/Temario (Separar cada punto por una nueva línea)</label>
-                        <textarea class="form-control" id="adminContenido" rows="5" required></textarea>
+                        <label class="form-label">Beneficios</label>
+                        <textarea class="form-control" id="adminContenido" rows="4"></textarea>
                     </div>
 
-                    <h4 class="mb-3 text-acento">Especificaciones y Requisitos</h4>
+                    <div class="mb-3">
+                        <label class="form-label">Gestión de Módulos</label>
+                        <div class="card p-3 bg-light border-0 mb-3">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-5">
+                                    <label class="small text-muted">Nombre del Módulo</label>
+                                    <input type="text" id="modInputNombre" class="form-control form-control-sm" placeholder="Ej: Módulo I: Fundamentos">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted">Horas</label>
+                                    <input type="text" id="modInputHoras" class="form-control form-control-sm" placeholder="Ej: 20h">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small text-muted">Costo (S/)</label>
+                                    <input type="number" id="modInputCosto" class="form-control form-control-sm" placeholder="0.00">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-sm btn-success w-100" onclick="agregarModuloUI()">
+                                        <i class="bi bi-plus-lg"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul id="listaModulosUI" class="list-group mb-2">
+                            <li class="list-group-item text-muted small text-center bg-light">Sin módulos agregados aún.</li>
+                        </ul>
+                        <small class="text-muted">Agregue los módulos uno por uno. Se guardarán automáticamente al guardar el programa.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Componentes Adicionales (Texto)</label>
+                        <textarea class="form-control" id="adminComponentesOpcionales" rows="2" placeholder="Ej: Incluye acceso a laboratorio..."></textarea>
+                    </div>
+
+                    <h4 class="mb-3 text-acento">Detalles</h4>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="adminDuracion" class="form-label">Duración (Ej: 40 horas)</label>
+                            <label class="form-label">Fecha Inicio</label>
+                            <input type="date" class="form-control" id="adminFechaInicio">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Modalidad</label>
+                            <select class="form-select" id="adminModalidad" onchange="toggleHorarioFields()">
+                                <option value="Presencial">Presencial</option>
+                                <option value="Online">Online</option>
+                                <option value="Semipresencial">Semipresencial</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Duración Total</label>
                             <input type="text" class="form-control" id="adminDuracion">
                         </div>
+                        
                         <div class="col-md-6 mb-3">
-                            <label for="adminModalidad" class="form-label">Modalidad (Ej: Virtual / Presencial)</label>
-                            <input type="text" class="form-control" id="adminModalidad">
+                            <label class="form-label">Horario</label>
+                            
+                            <input type="hidden" id="adminHorario" value=""> 
+
+                            <div id="horarioSemipresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                                <p class="small fw-bold text-muted mb-1">Configuración Semipresencial:</p>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Horario Online:</label>
+                                    <div id="onlineDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                    
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">De</span>
+                                        <input type="number" id="onlineStartHour" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <span class="input-group-text">A</span>
+                                        <input type="number" id="onlineEndHour" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineStartHour', 0.25)">+</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineStartHour', 0.25)">-</button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Horario Presencial:</label>
+                                    <div id="presencialDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                    
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">De</span>
+                                        <input type="number" id="presencialStartHour" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <span class="input-group-text">A</span>
+                                        <input type="number" id="presencialEndHour" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialStartHour', 0.25)">+</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialStartHour', 0.25)">-</button>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="generateHorarioString()">
+                                    <i class="bi bi-arrow-clockwise"></i> Actualizar Horario
+                                </button>
+                            </div>
+
+                            <div id="horarioOnlineGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                                 <p class="small fw-bold text-muted mb-1">Configuración Online:</p>
+                                 <div id="onlineSimpleDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                 
+                                 <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text">De</span>
+                                    <input type="number" id="onlineSimpleStartHour" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                    <span class="input-group-text">A</span>
+                                    <input type="number" id="onlineSimpleEndHour" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineSimpleStartHour', 0.25)">+</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour', 0.25)">-</button>
+                                 </div>
+                            </div>
+
+                            <div id="horarioPresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                                 <p class="small fw-bold text-muted mb-1">Configuración Presencial:</p>
+                                 <div id="presencialSimpleDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                 
+                                 <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text">De</span>
+                                    <input type="number" id="presencialSimpleStartHour" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                    <span class="input-group-text">A</span>
+                                    <input type="number" id="presencialSimpleEndHour" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialSimpleStartHour', 0.25)">+</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour', 0.25)">-</button>
+                                 </div>
+                            </div>
+
+                            <input type="text" id="simpleHorarioInput" class="form-control mt-2" placeholder="Ej: Lun-Vie 6pm" onkeyup="generateHorarioString()">
+                            
+                            <p id="horarioPreview" class="mt-2 small text-success fw-bold"></p>
                         </div>
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="adminPerfilEgresado" class="form-label">Perfil del Egresado</label>
-                        <textarea class="form-control" id="adminPerfilEgresado" rows="2"></textarea>
+                        <label class="form-label">Dirigido A</label>
+                        <textarea class="form-control" id="adminDirigidoA" rows="2"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="adminRequisitos" class="form-label">Requisitos del Curso</label>
-                        <textarea class="form-control" id="adminRequisitos" rows="2"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label for="adminTags" class="form-label">Tags/Palabras Clave (Separadas por coma o espacio)</label>
-                        <input type="text" class="form-control" id="adminTags" placeholder="Ej: patronaje, costura, digital">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-control" id="adminTags">
                     </div>
 
                     <button type="button" class="btn btn-acento w-100 mt-3" onclick="guardarCambiosEdicion()">Guardar Programa</button>
-                    <small class="form-text text-muted mt-2">
-                        El mismo botón se usa para crear o actualizar según el modo de edición.
-                    </small>
                 </form>
             </div>
         </section>
+        
+        <div id="reserva-container" class="spa-section" style="display:none;"></div> 
+        <a href="https://wa.me/51954622231" class="whatsapp-float" target="_blank"><i class="bi bi-whatsapp"></i></a>
+        <footer class="site-footer">
 
     </main>
 
-    <a href="https://wa.me/51954622231" class="whatsapp-float" target="_blank" data-bs-toggle="tooltip" data-bs-placement="left" title="Contáctanos por WhatsApp">
-        <i class="bi bi-whatsapp"></i>
-    </a>
+    <a href="https://wa.me/51954622231" class="whatsapp-float" target="_blank"><i class="bi bi-whatsapp"></i></a>
 
     <footer class="site-footer">
         <div class="container">
             <p>&copy; 2024 CTTC SENATI. Todos los derechos reservados.</p>
-            <p>Diseñado y desarrollado para programas de capacitación.</p>
         </div>
     </footer>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -265,17 +331,14 @@
             apiKey: "AIzaSyCgMZOmU7FCZTRA44rBKeT8f6B_jYAf4_A", 
             authDomain: "cttc-senati-catalogo.firebaseapp.com",
             projectId: "cttc-senati-catalogo",
-            storageBucket: "cttc-senati-catalogo.firebasestorage.app",
+            storageBucket: "cttc-senati-catalogo.firebasestorage.app", 
             messagingSenderId: "385604859292",
             appId: "1:385604859292:web:aca4b0ca7e77561cdec459"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth(); 
     </script>
-
     <script src="app.js"></script>
-
 </body>
 </html>
