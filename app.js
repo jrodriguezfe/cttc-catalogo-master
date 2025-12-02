@@ -19,6 +19,7 @@ let selectedOnlineSimpleDays2 = [];
 let selectedPresencialSimpleDays1 = []; 
 let selectedPresencialSimpleDays2 = [];
 
+// Función para convertir valor decimal (ej: 18.25) a HH:MM (ej: 18:15)
 function decimalToTime(decimal) {
     if (isNaN(decimal)) return '';
     const totalMinutes = Math.round(decimal * 60);
@@ -27,10 +28,12 @@ function decimalToTime(decimal) {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
+// Función que se dispara al cambiar los inputs de hora decimal
 function formatTimeInput(input) {
     let val = parseFloat(input.value);
     if (isNaN(val) || val < 0 || val > 23.75) {
-        val = Math.max(0, Math.min(23.75, val || 0));
+        // Asegura que el valor esté en el rango y sea múltiplo de 0.25
+        val = Math.max(0, Math.min(23.75, Math.round((val || 0) / 0.25) * 0.25));
     }
     input.value = val.toFixed(2);
     generateHorarioString();
@@ -67,7 +70,7 @@ function toggleDay(day, targetArray, containerId) {
     } else {
         targetArray.push(day);
     }
-    setupHorarioButtons(); // Vuelve a renderizar para actualizar el estado visual
+    setupHorarioButtons(); 
 }
 
 function setupHorarioButtons() {
@@ -92,7 +95,6 @@ function setupHorarioButtons() {
         });
     };
 
-    // Renderizar todos los contenedores posibles
     renderButtons('onlineDaysContainer');
     renderButtons('presencialDaysContainer');
     renderButtons('onlineSimpleDaysContainer1'); 
@@ -105,7 +107,8 @@ function toggleHorarioFields(forceModality = null) {
     const modality = forceModality || document.getElementById('adminModalidad').value;
     const allGenerators = document.querySelectorAll('.schedule-config-container');
 
-    allGenerators.forEach(g => g.style.display = 'none');
+    // ⛔ CORRECCIÓN: Asegura que todos estén ocultos forzadamente.
+    allGenerators.forEach(g => g.style.display = 'none'); 
 
     // Resetear todos los arrays al cambiar de modalidad para evitar arrastrar días.
     selectedOnlineDays = [];
@@ -115,23 +118,19 @@ function toggleHorarioFields(forceModality = null) {
     selectedPresencialSimpleDays1 = [];
     selectedPresencialSimpleDays2 = [];
     
-    // FIX ROBUSTO: Resetear explícitamente TODOS los campos de hora 
-    document.getElementById('onlineStartHour').value = '0.00';
-    document.getElementById('onlineEndHour').value = '0.00';
-    document.getElementById('presencialStartHour').value = '0.00';
-    document.getElementById('presencialEndHour').value = '0.00';
-    document.getElementById('onlineSimpleStartHour1').value = '0.00';
-    document.getElementById('onlineSimpleEndHour1').value = '0.00';
-    document.getElementById('onlineSimpleStartHour2').value = '0.00';
-    document.getElementById('onlineSimpleEndHour2').value = '0.00';
-    document.getElementById('presencialSimpleStartHour1').value = '0.00';
-    document.getElementById('presencialSimpleEndHour1').value = '0.00';
-    document.getElementById('presencialSimpleStartHour2').value = '0.00';
-    document.getElementById('presencialSimpleEndHour2').value = '0.00';
+    // FIX ROBUSTO: Resetear explícitamente TODOS los campos de hora decimal a 0.00
+    // Esto es necesario para que el parseo sea limpio al cargar un curso
+    const hourInputs = ['onlineStartHour', 'onlineEndHour', 'presencialStartHour', 'presencialEndHour', 
+                        'onlineSimpleStartHour1', 'onlineSimpleEndHour1', 'onlineSimpleStartHour2', 'onlineSimpleEndHour2', 
+                        'presencialSimpleStartHour1', 'presencialSimpleEndHour1', 'presencialSimpleStartHour2', 'presencialSimpleEndHour2'];
+    hourInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if(input) input.value = '0.00';
+    });
+    
+    setupHorarioButtons(); // Inicializar o limpiar los botones de día
 
-    // Inicializar o limpiar los botones de día (para que reflejen los arrays vacíos)
-    setupHorarioButtons(); 
-
+    // Mostrar el generador correcto
     if (modality === 'Semipresencial') {
         document.getElementById('horarioSemipresencialGenerator').style.display = 'block';
     } else if (modality === 'Online') {
@@ -140,9 +139,8 @@ function toggleHorarioFields(forceModality = null) {
         document.getElementById('horarioPresencialGenerator').style.display = 'block';
     }
     
-    // Solo generar si la modalidad cambia manualmente (no si se está cargando el programa).
     if (!forceModality) {
-        generateHorarioString();
+        generateHorarioString(); // Si se cambió manualmente, generar la cadena
     }
 }
 
@@ -151,98 +149,51 @@ function generateHorarioString() {
     const inputHorario = document.getElementById('adminHorario');
     let finalHorario = '';
     
-    // Limpiar el resultado anterior
     inputHorario.value = ""; 
 
-    // 1. GENERACIÓN AUTOMÁTICA SEGÚN MODALIDAD
-    
+    // Función auxiliar para generar la parte del horario
+    const generateBlock = (daysArray, startId, endId, prefix = '') => {
+        const start = parseFloat(document.getElementById(startId).value);
+        const end = parseFloat(document.getElementById(endId).value);
+        if (!isNaN(start) && !isNaN(end) && (end > start) && daysArray.length > 0) {
+            const timeStr = `${decimalToTime(start)} - ${decimalToTime(end)}`;
+            const daysStr = daysArray.join(', ');
+            return `${prefix}${daysStr} ${timeStr}`;
+        }
+        return null;
+    };
+
     if (modality === 'Semipresencial') {
         let parts = [];
-        let hasConfiguration = false;
+        const onlinePart = generateBlock(selectedOnlineDays, 'onlineStartHour', 'onlineEndHour', 'Online: ');
+        const presencialPart = generateBlock(selectedPresencialDays, 'presencialStartHour', 'presencialEndHour', 'Presencial: ');
 
-        // Horario Online (Semipresencial)
-        const startO = parseFloat(document.getElementById('onlineStartHour').value);
-        const endO = parseFloat(document.getElementById('onlineEndHour').value);
-        // La configuración solo se acepta si hay días y la duración es > 0
-        if (!isNaN(startO) && !isNaN(endO) && (endO > startO) && selectedOnlineDays.length > 0) {
-            const timeStr = `${decimalToTime(startO)} - ${decimalToTime(endO)}`;
-            parts.push(`Online: ${selectedOnlineDays.join(', ')} ${timeStr}`);
-            hasConfiguration = true;
-        }
-
-        // Horario Presencial (Semipresencial)
-        const startP = parseFloat(document.getElementById('presencialStartHour').value);
-        const endP = parseFloat(document.getElementById('presencialEndHour').value);
-        if (!isNaN(startP) && !isNaN(endP) && (endP > startP) && selectedPresencialDays.length > 0) {
-            const timeStr = `${decimalToTime(startP)} - ${decimalToTime(endP)}`;
-            parts.push(`Presencial: ${selectedPresencialDays.join(', ')} ${timeStr}`);
-            hasConfiguration = true;
-        }
-
-        if (hasConfiguration) {
-            finalHorario = parts.join(' / ');
-        }
+        if (onlinePart) parts.push(onlinePart);
+        if (presencialPart) parts.push(presencialPart);
+        
+        if (parts.length > 0) finalHorario = parts.join(' / ');
     
-    // 2. MODALIDAD ONLINE (Doble Bloque)
     } else if (modality === 'Online') {
         let parts = [];
-        let hasConfiguration = false;
+        const block1 = generateBlock(selectedOnlineSimpleDays1, 'onlineSimpleStartHour1', 'onlineSimpleEndHour1');
+        const block2 = generateBlock(selectedOnlineSimpleDays2, 'onlineSimpleStartHour2', 'onlineSimpleEndHour2');
 
-        // Bloque 1
-        const start1 = parseFloat(document.getElementById('onlineSimpleStartHour1').value);
-        const end1 = parseFloat(document.getElementById('onlineSimpleEndHour1').value);
-        if (!isNaN(start1) && !isNaN(end1) && (end1 > start1) && selectedOnlineSimpleDays1.length > 0) {
-            const timeStr = `${decimalToTime(start1)} - ${decimalToTime(end1)}`;
-            const daysStr = selectedOnlineSimpleDays1.join(', ');
-            parts.push(`${daysStr} ${timeStr}`);
-            hasConfiguration = true;
-        }
+        if (block1) parts.push(block1);
+        if (block2) parts.push(block2);
 
-        // Bloque 2
-        const start2 = parseFloat(document.getElementById('onlineSimpleStartHour2').value);
-        const end2 = parseFloat(document.getElementById('onlineSimpleEndHour2').value);
-        if (!isNaN(start2) && !isNaN(end2) && (end2 > start2) && selectedOnlineSimpleDays2.length > 0) {
-            const timeStr = `${decimalToTime(start2)} - ${decimalToTime(end2)}`;
-            const daysStr = selectedOnlineSimpleDays2.join(', ');
-            parts.push(`${daysStr} ${timeStr}`);
-            hasConfiguration = true;
-        }
+        if (parts.length > 0) finalHorario = `Online: ${parts.join(' y ')}`;
 
-        if (hasConfiguration) {
-            finalHorario = `Online: ${parts.join(' y ')}`;
-        }
-
-    // 3. MODALIDAD PRESENCIAL (Doble Bloque)
     } else if (modality === 'Presencial') {
         let parts = [];
-        let hasConfiguration = false;
+        const block1 = generateBlock(selectedPresencialSimpleDays1, 'presencialSimpleStartHour1', 'presencialSimpleEndHour1');
+        const block2 = generateBlock(selectedPresencialSimpleDays2, 'presencialSimpleStartHour2', 'presencialSimpleEndHour2');
 
-        // Bloque 1
-        const start1 = parseFloat(document.getElementById('presencialSimpleStartHour1').value);
-        const end1 = parseFloat(document.getElementById('presencialSimpleEndHour1').value);
-        if (!isNaN(start1) && !isNaN(end1) && (end1 > start1) && selectedPresencialSimpleDays1.length > 0) {
-            const timeStr = `${decimalToTime(start1)} - ${decimalToTime(end1)}`;
-            const daysStr = selectedPresencialSimpleDays1.join(', ');
-            parts.push(`${daysStr} ${timeStr}`);
-            hasConfiguration = true;
-        }
+        if (block1) parts.push(block1);
+        if (block2) parts.push(block2);
 
-        // Bloque 2
-        const start2 = parseFloat(document.getElementById('presencialSimpleStartHour2').value);
-        const end2 = parseFloat(document.getElementById('presencialSimpleEndHour2').value);
-        if (!isNaN(start2) && !isNaN(end2) && (end2 > start2) && selectedPresencialSimpleDays2.length > 0) {
-            const timeStr = `${decimalToTime(start2)} - ${decimalToTime(end2)}`;
-            const daysStr = selectedPresencialSimpleDays2.join(', ');
-            parts.push(`${daysStr} ${timeStr}`);
-            hasConfiguration = true;
-        }
-
-        if (hasConfiguration) {
-            finalHorario = `Presencial: ${parts.join(' y ')}`;
-        }
+        if (parts.length > 0) finalHorario = `Presencial: ${parts.join(' y ')}`;
     }
     
-    // Guardar el horario final en el campo oculto
     if (finalHorario.length > 0) {
         inputHorario.value = finalHorario;
     } else {
@@ -272,11 +223,11 @@ function procesarUrlImagen(url) {
 // =================================================================
 function formatDate(dateString) {
     if (!dateString) return 'Pronto';
-    const parts = dateString.split('-'); // Espera YYYY-MM-DD
-    if (parts.length !== 3) return dateString; // Si no es el formato esperado, retorna el original
+    const parts = dateString.split('-'); 
+    if (parts.length !== 3) return dateString; 
 
     const year = parseInt(parts[0]);
-    const monthIndex = parseInt(parts[1]) - 1; // 0-indexed
+    const monthIndex = parseInt(parts[1]) - 1; 
     const day = parseInt(parts[2]);
 
     const monthNames = [
@@ -284,7 +235,6 @@ function formatDate(dateString) {
         "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
     ];
     
-    // Verificación básica
     if (monthIndex < 0 || monthIndex > 11 || isNaN(day) || isNaN(year)) {
         return dateString;
     }
@@ -302,24 +252,17 @@ function formatBlockTime(time24) {
     let hours12 = hours % 12;
     if (hours12 === 0) hours12 = 12; 
     
-    // Formato Hpm/am, con minutos solo si no son cero.
     return `${hours12}${minutes > 0 ? ':' + String(minutes).padStart(2, '0') : ''}${suffix}`;
 }
 
-// FUNCIÓN PRINCIPAL DE CONVERSIÓN DE CADENA COMPLETA (Lun, Mié 18:00 - 20:00 -> Lun, Mié 6pm - 8pm)
+// FUNCIÓN PRINCIPAL DE CONVERSIÓN DE CADENA COMPLETA 
 function formatScheduleString(scheduleString) {
     if (!scheduleString) return 'Por definir';
-
-    // Regex global para encontrar todos los patrones de horas: XX:XX - YY:YY
     const regexGlobal = /(\d{2}:\d{2})\s-\s(\d{2}:\d{2})/g;
     
-    // Función de reemplazo que se ejecuta por cada coincidencia encontrada
     const replacedString = scheduleString.replace(regexGlobal, (match, start24, end24) => {
-        
         const start12 = formatBlockTime(start24);
         const end12 = formatBlockTime(end24);
-
-        // De "HH:MM - HH:MM" a "Hpm - Hpm"
         return `${start12} - ${end12}`; 
     });
 
@@ -343,9 +286,11 @@ function parseHorarioString(horarioStr, modality) {
     const extractTime = (subStr) => {
         const match = subStr.match(timeRegex);
         if (match) {
+            // Función interna para convertir la hora de 24h a decimal
             const convertToDecimal = (time) => {
                 const [h, m] = time.split(':').map(Number);
-                return (h + m / 60).toFixed(2);
+                // Retorna el valor decimal con dos decimales (ej: 9:30 -> 9.50)
+                return (h + m / 60).toFixed(2); 
             };
             return {
                 start: convertToDecimal(match[1]),
@@ -360,16 +305,13 @@ function parseHorarioString(horarioStr, modality) {
         const parts = horarioStr.split(' / ');
         
         parts.forEach(part => {
-            if (part.startsWith('Online:')) {
-                const time = extractTime(part);
-                if (time) {
+            const time = extractTime(part);
+            if (time) {
+                if (part.startsWith('Online:')) {
                     selectedOnlineDays.push(...extractDays(part));
                     document.getElementById('onlineStartHour').value = time.start;
                     document.getElementById('onlineEndHour').value = time.end;
-                }
-            } else if (part.startsWith('Presencial:')) {
-                const time = extractTime(part);
-                if (time) {
+                } else if (part.startsWith('Presencial:')) {
                     selectedPresencialDays.push(...extractDays(part));
                     document.getElementById('presencialStartHour').value = time.start;
                     document.getElementById('presencialEndHour').value = time.end;
@@ -436,9 +378,10 @@ function showSection(sectionId, isNew = false) {
             renderModulosUI();
             document.getElementById('adminFormTitle').innerHTML = 'Crear Nuevo Programa';
             document.getElementById('adminForm').reset();
+            // Para nuevo programa, forzar la modalidad por defecto para mostrar el generador
+            document.getElementById('adminModalidad').value = 'Presencial'; 
+            toggleHorarioFields('Presencial'); 
         }
-        // Llamar a toggleHorarioFields al entrar al formulario, por defecto con 'Presencial'
-        toggleHorarioFields('Presencial'); 
     }
     if (sectionId === 'admin-dashboard') loadAdminList();
     if (sectionId === 'catalogo') cargarProgramas();
@@ -590,7 +533,7 @@ function mostrarDetalle(id) {
     }
 
     const fechaFormateada = formatDate(p.fechaInicio); 
-    const horarioFormateado = formatScheduleString(p.horario); // <-- APLICAR FORMATO AM/PM
+    const horarioFormateado = formatScheduleString(p.horario); 
 
     document.getElementById('detalleModalLabel').textContent = p.titulo;
     document.getElementById('detalle-contenido').innerHTML = `
@@ -653,8 +596,6 @@ function cargarProgramaParaEdicion(id) {
         // Mapear campos básicos
         ['Titulo','Categoria','Estado','ImagenUrl','Descripcion','DescripcionDetallada','Contenido','Duracion','Modalidad','FechaInicio','Horario','ComponentesOpcionales','DirigidoA','Tags'].forEach(f => {
             let fieldName = f.charAt(0).toLowerCase() + f.slice(1);
-            
-            // CORRECCIÓN: Si el campo es 'Descripcion', el nombre real en Firebase es 'descripcionCorta'.
             if (fieldName === 'descripcion') {
                 fieldName = 'descripcionCorta'; 
             }
@@ -669,18 +610,20 @@ function cargarProgramaParaEdicion(id) {
         currentModulos = p.modulosJson || [];
         renderModulosUI();
         
-        // 1. Cargar la modalidad y resetear la vista (limpia arrays/inputs de hora)
-        toggleHorarioFields(p.modalidad || 'Presencial');
+        // 1. Cargar la modalidad en el select
+        const modalidadSelect = document.getElementById('adminModalidad');
+        modalidadSelect.value = p.modalidad || 'Presencial';
+
+        // 2. Resetear la vista y mostrar el generador correcto con la modalidad cargada.
+        toggleHorarioFields(modalidadSelect.value);
         
-        // 2. Si el horario NO es vacío, lo parseamos para poblar la interfaz gráfica.
+        // 3. Si el horario NO es vacío, lo parseamos para poblar la interfaz gráfica.
         if (p.horario && p.horario.length > 0) {
-            parseHorarioString(p.horario, p.modalidad);
+            parseHorarioString(p.horario, modalidadSelect.value);
         }
 
-        // 3. Re-renderizar los botones de día con los arrays cargados
+        // 4. Re-renderizar los botones de día y regenerar la cadena final.
         setupHorarioButtons(); 
-        
-        // 4. Generar la cadena de horario final (con los datos cargados)
         generateHorarioString(); 
 
         showSection('admin-form');
@@ -697,7 +640,6 @@ async function guardarCambiosEdicion() {
         return; 
     }
 
-    // El campo de horario ahora siempre toma el valor generado por generateHorarioString()
     const data = {
         titulo: document.getElementById('adminTitulo').value,
         categoria: document.getElementById('adminCategoria').value,
@@ -733,7 +675,7 @@ function eliminarPrograma(id) {
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     cargarProgramas();
-    setupHorarioButtons(); // Inicializar botones al cargar la página
+    setupHorarioButtons(); 
     
     const g = document.getElementById('programas-container');
     if(g) {
