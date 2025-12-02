@@ -292,6 +292,10 @@
                                         <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour2', 0.25)">-</button>
                                      </div>
                                 </div>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="generateHorarioString()">
+                                    <i class="bi bi-arrow-clockwise"></i> Actualizar Horario
+                                </button>
                             </div>
 
                             <div id="horarioPresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
@@ -326,6 +330,10 @@
                                         <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour2', 0.25)">-</button>
                                      </div>
                                 </div>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="generateHorarioString()">
+                                    <i class="bi bi-arrow-clockwise"></i> Actualizar Horario
+                                </button>
                             </div>
 
                             <input type="text" id="simpleHorarioInput" class="form-control mt-2" placeholder="Ej: Lun-Vie 6pm" onkeyup="generateHorarioString()">
