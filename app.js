@@ -1,12 +1,14 @@
-// app.js - CÓDIGO FINAL Y ROBUSTO
+// app.js - CÓDIGO FINAL Y ROBUSTO CON EDICIÓN DE MÓDULOS Y PRÓXIMOS GRUPOS
 
 let currentEditId = null;
 let allProgramas = []; 
 let isDragging = false, startPos = 0, scrollLeft = 0; 
 let currentModulos = []; 
+let nextGroups = [];
+let editingModuloIndex = -1; // -1 = Modo Creación, >= 0 = Índice a editar
 
 // =================================================================
-// LOGICA DE HORARIO Y DÍAS (ACTUALIZADA PARA SOPORTAR DOBLE BLOQUE)
+// LOGICA DE HORARIO Y DÍAS 
 // =================================================================
 const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 // Arrays para Semipresencial
@@ -19,39 +21,8 @@ let selectedOnlineSimpleDays2 = [];
 let selectedPresencialSimpleDays1 = []; 
 let selectedPresencialSimpleDays2 = [];
 
-// Función para convertir valor decimal (ej: 18.25) a HH:MM (ej: 18:15)
-function decimalToTime(decimal) {
-    if (isNaN(decimal)) return '';
-    const totalMinutes = Math.round(decimal * 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-}
-
-// Función que se dispara al cambiar los inputs de hora decimal
-function formatTimeInput(input) {
-    let val = parseFloat(input.value);
-    if (isNaN(val) || val < 0 || val > 23.75) {
-        // Asegura que el valor esté en el rango y sea múltiplo de 0.25
-        val = Math.max(0, Math.min(23.75, Math.round((val || 0) / 0.25) * 0.25));
-    }
-    input.value = val.toFixed(2);
-    generateHorarioString();
-}
-
-function incrementHour(inputId, step) {
-    const input = document.getElementById(inputId);
-    let val = parseFloat(input.value);
-    input.value = (isNaN(val) ? step : Math.min(23.75, val + step)).toFixed(2);
-    generateHorarioString();
-}
-
-function decrementHour(inputId, step) {
-    const input = document.getElementById(inputId);
-    let val = parseFloat(input.value);
-    input.value = (isNaN(val) ? 0 : Math.max(0, val - step)).toFixed(2);
-    generateHorarioString();
-}
+// FUNCIONES DECIMALES ELIMINADAS/SIMPLIFICADAS
+// La lógica de hora ahora trabaja directamente con strings HH:MM
 
 function getTargetArray(containerId) {
     if (containerId === 'onlineDaysContainer') return selectedOnlineDays;
@@ -107,10 +78,9 @@ function toggleHorarioFields(forceModality = null) {
     const modality = forceModality || document.getElementById('adminModalidad').value;
     const allGenerators = document.querySelectorAll('.schedule-config-container');
 
-    // ⛔ CORRECCIÓN: Asegura que todos estén ocultos forzadamente.
     allGenerators.forEach(g => g.style.display = 'none'); 
 
-    // Resetear todos los arrays al cambiar de modalidad para evitar arrastrar días.
+    // Resetear arrays y campos de hora
     selectedOnlineDays = [];
     selectedPresencialDays = [];
     selectedOnlineSimpleDays1 = [];
@@ -118,19 +88,17 @@ function toggleHorarioFields(forceModality = null) {
     selectedPresencialSimpleDays1 = [];
     selectedPresencialSimpleDays2 = [];
     
-    // FIX ROBUSTO: Resetear explícitamente TODOS los campos de hora decimal a 0.00
-    // Esto es necesario para que el parseo sea limpio al cargar un curso
+    // Resetear los inputs de tiempo a '00:00' (string)
     const hourInputs = ['onlineStartHour', 'onlineEndHour', 'presencialStartHour', 'presencialEndHour', 
                         'onlineSimpleStartHour1', 'onlineSimpleEndHour1', 'onlineSimpleStartHour2', 'onlineSimpleEndHour2', 
                         'presencialSimpleStartHour1', 'presencialSimpleEndHour1', 'presencialSimpleStartHour2', 'presencialSimpleEndHour2'];
     hourInputs.forEach(id => {
         const input = document.getElementById(id);
-        if(input) input.value = '0.00';
+        if(input) input.value = '00:00';
     });
     
-    setupHorarioButtons(); // Inicializar o limpiar los botones de día
+    setupHorarioButtons(); 
 
-    // Mostrar el generador correcto
     if (modality === 'Semipresencial') {
         document.getElementById('horarioSemipresencialGenerator').style.display = 'block';
     } else if (modality === 'Online') {
@@ -140,7 +108,7 @@ function toggleHorarioFields(forceModality = null) {
     }
     
     if (!forceModality) {
-        generateHorarioString(); // Si se cambió manualmente, generar la cadena
+        generateHorarioString(); 
     }
 }
 
@@ -151,14 +119,18 @@ function generateHorarioString() {
     
     inputHorario.value = ""; 
 
-    // Función auxiliar para generar la parte del horario
+    // 💡 La generación ahora usa directamente el string HH:MM
+    const getHourTime = (id) => document.getElementById(id).value;
+
     const generateBlock = (daysArray, startId, endId, prefix = '') => {
-        const start = parseFloat(document.getElementById(startId).value);
-        const end = parseFloat(document.getElementById(endId).value);
-        if (!isNaN(start) && !isNaN(end) && (end > start) && daysArray.length > 0) {
-            const timeStr = `${decimalToTime(start)} - ${decimalToTime(end)}`;
-            const daysStr = daysArray.join(', ');
-            return `${prefix}${daysStr} ${timeStr}`;
+        const startStr = getHourTime(startId);
+        const endStr = getHourTime(endId);
+
+        // Simple chequeo de validez y orden (HH:MM es comparable como string)
+        if (startStr && endStr && daysArray.length > 0 && endStr > startStr) {
+             const timeStr = `${startStr} - ${endStr}`;
+             const daysStr = daysArray.join(', ');
+             return `${prefix}${daysStr} ${timeStr}`;
         }
         return null;
     };
@@ -203,7 +175,7 @@ function generateHorarioString() {
 
 
 // =================================================================
-// UTILIDAD: PROCESAR URLS
+// UTILS Y FORMATO 
 // =================================================================
 function procesarUrlImagen(url) {
     if (!url) return 'https://placehold.co/300x200?text=Imagen+no+disponible';
@@ -218,9 +190,6 @@ function procesarUrlImagen(url) {
     return url;
 }
 
-// =================================================================
-// FUNCIÓN DE FORMATO DE FECHA
-// =================================================================
 function formatDate(dateString) {
     if (!dateString) return 'Pronto';
     const parts = dateString.split('-'); 
@@ -242,9 +211,6 @@ function formatDate(dateString) {
     return `${day} de ${monthNames[monthIndex]} del ${year}`;
 }
 
-// =================================================================
-// FUNCIÓN DE CONVERSIÓN DE BLOQUES DE HORA (24H a 12H AM/PM)
-// =================================================================
 function formatBlockTime(time24) {
     const [hours, minutes] = time24.split(':').map(Number);
     
@@ -255,7 +221,6 @@ function formatBlockTime(time24) {
     return `${hours12}${minutes > 0 ? ':' + String(minutes).padStart(2, '0') : ''}${suffix}`;
 }
 
-// FUNCIÓN PRINCIPAL DE CONVERSIÓN DE CADENA COMPLETA 
 function formatScheduleString(scheduleString) {
     if (!scheduleString) return 'Por definir';
     const regexGlobal = /(\d{2}:\d{2})\s-\s(\d{2}:\d{2})/g;
@@ -269,13 +234,9 @@ function formatScheduleString(scheduleString) {
     return replacedString;
 }
 
-// =================================================================
-// UTILIDAD: PARSEAR HORARIO GUARDADO A ARRAYS Y HORAS (PARA EDICIÓN)
-// =================================================================
 function parseHorarioString(horarioStr, modality) {
     if (!horarioStr) return;
     
-    // Patrón para capturar DÍAS y HORAS (HH:MM - HH:MM)
     const timeRegex = /(\d{2}:\d{2})\s-\s(\d{2}:\d{2})/;
     const dayRegex = /(Lun|Mar|Mié|Jue|Vie|Sáb|Dom)/g;
     
@@ -286,21 +247,15 @@ function parseHorarioString(horarioStr, modality) {
     const extractTime = (subStr) => {
         const match = subStr.match(timeRegex);
         if (match) {
-            // Función interna para convertir la hora de 24h a decimal
-            const convertToDecimal = (time) => {
-                const [h, m] = time.split(':').map(Number);
-                // Retorna el valor decimal con dos decimales (ej: 9:30 -> 9.50)
-                return (h + m / 60).toFixed(2); 
-            };
+            // Ahora devuelve el string HH:MM directamente
             return {
-                start: convertToDecimal(match[1]),
-                end: convertToDecimal(match[2])
+                start: match[1], 
+                end: match[2]
             };
         }
         return null;
     };
     
-    // 1. MODALIDAD SEMIPRESENCIAL
     if (modality === 'Semipresencial') {
         const parts = horarioStr.split(' / ');
         
@@ -319,7 +274,6 @@ function parseHorarioString(horarioStr, modality) {
             }
         });
 
-    // 2. MODALIDAD ONLINE (Doble Bloque)
     } else if (modality === 'Online' && horarioStr.startsWith('Online:')) {
         const content = horarioStr.replace('Online: ', ''); 
         const parts = content.split(' y ');
@@ -340,7 +294,6 @@ function parseHorarioString(horarioStr, modality) {
             }
         });
         
-    // 3. MODALIDAD PRESENCIAL (Doble Bloque)
     } else if (modality === 'Presencial' && horarioStr.startsWith('Presencial:')) {
         const content = horarioStr.replace('Presencial: ', ''); 
         const parts = content.split(' y ');
@@ -365,33 +318,18 @@ function parseHorarioString(horarioStr, modality) {
 
 
 // =================================================================
-// 1. MANEJO DE VISTAS (SPA)
+// 2. LOGICA DE MÓDULOS AMIGABLE (Añadiendo Edición y formato de vista)
 // =================================================================
-function showSection(sectionId, isNew = false) {
-    document.querySelectorAll('.spa-section').forEach(s => s.style.display = 'none');
-    document.getElementById(sectionId).style.display = 'block';
-
-    if (sectionId === 'admin-form') {
-        if (isNew) {
-            currentEditId = null;
-            currentModulos = []; 
-            renderModulosUI();
-            document.getElementById('adminFormTitle').innerHTML = 'Crear Nuevo Programa';
-            document.getElementById('adminForm').reset();
-            // Para nuevo programa, forzar la modalidad por defecto para mostrar el generador
-            document.getElementById('adminModalidad').value = 'Presencial'; 
-            toggleHorarioFields('Presencial'); 
-        }
-    }
-    if (sectionId === 'admin-dashboard') loadAdminList();
-    if (sectionId === 'catalogo') cargarProgramas();
+function setModuloInputs(nombre = '', descripcion = '', horas = '', costo = '') {
+    document.getElementById('modInputNombre').value = nombre;
+    document.getElementById('modInputDescripcion').value = descripcion;
+    document.getElementById('modInputHoras').value = horas;
+    document.getElementById('modInputCosto').value = costo;
 }
 
-// =================================================================
-// 2. LOGICA DE MÓDULOS AMIGABLE
-// =================================================================
 function agregarModuloUI() {
     const nombre = document.getElementById('modInputNombre').value.trim();
+    const descripcion = document.getElementById('modInputDescripcion').value.trim();
     const horas = document.getElementById('modInputHoras').value.trim();
     const costo = document.getElementById('modInputCosto').value.trim();
 
@@ -399,22 +337,55 @@ function agregarModuloUI() {
         alert("El nombre del módulo es obligatorio.");
         return;
     }
-
-    currentModulos.push({
+    
+    const nuevoModulo = {
         nombre: nombre,
+        descripcion: descripcion || "Sin descripción.", 
         horas: horas || "N/A",
         costo: parseFloat(costo) || 0
-    });
+    };
 
-    document.getElementById('modInputNombre').value = "";
-    document.getElementById('modInputHoras').value = "";
-    document.getElementById('modInputCosto').value = "";
+    if (editingModuloIndex > -1) {
+        // MODO EDICIÓN: Actualizar el módulo existente
+        currentModulos[editingModuloIndex] = nuevoModulo;
+        editingModuloIndex = -1; // Volver al modo creación
+        document.getElementById('addModuloButton').textContent = 'Agregar Módulo';
+        document.getElementById('addModuloButton').classList.remove('btn-warning');
+        document.getElementById('addModuloButton').classList.add('btn-success');
+    } else {
+        // MODO CREACIÓN: Añadir nuevo módulo
+        currentModulos.push(nuevoModulo);
+    }
 
+    setModuloInputs(); // Limpiar inputs
     renderModulosUI();
+}
+
+function editarModuloUI(index) {
+    const modulo = currentModulos[index];
+    setModuloInputs(modulo.nombre, modulo.descripcion, modulo.horas, modulo.costo);
+    
+    editingModuloIndex = index; // Establecer índice para editar
+    
+    // Cambiar la UI del botón para reflejar el modo edición
+    document.getElementById('addModuloButton').textContent = 'Guardar Edición';
+    document.getElementById('addModuloButton').classList.remove('btn-success');
+    document.getElementById('addModuloButton').classList.add('btn-warning');
+    
+    // Opcional: desplazar la vista a los campos de input si el usuario está muy abajo
+    document.getElementById('modInputNombre').focus(); 
 }
 
 function eliminarModuloUI(index) {
     currentModulos.splice(index, 1);
+    // Si el módulo eliminado era el que estábamos editando, salir del modo edición.
+    if (editingModuloIndex === index) {
+        editingModuloIndex = -1;
+        document.getElementById('addModuloButton').textContent = 'Agregar Módulo';
+        document.getElementById('addModuloButton').classList.remove('btn-warning');
+        document.getElementById('addModuloButton').classList.add('btn-success');
+        setModuloInputs();
+    }
     renderModulosUI();
 }
 
@@ -430,13 +401,81 @@ function renderModulosUI() {
     currentModulos.forEach((mod, index) => {
         const li = document.createElement('li');
         li.className = "list-group-item d-flex justify-content-between align-items-center";
+        
+        // 💡 Nuevo formato de visualización (Duración: X horas Costo: S/ Y)
+        const duracion = mod.horas.trim();
+        const duracionTexto = duracion ? `${duracion} horas` : 'N/A';
+        const costo = parseFloat(mod.costo).toFixed(2);
+        
         li.innerHTML = `
             <div>
                 <span class="fw-bold">${mod.nombre}</span>
-                <span class="badge bg-secondary ms-2">${mod.horas}</span>
-                <span class="badge bg-success ms-1">S/ ${mod.costo}</span>
+                <span class="badge bg-light text-dark ms-2 border border-secondary">Duración: ${duracionTexto}</span>
+                <span class="badge bg-light text-dark ms-1 border border-success">Costo: S/ ${costo}</span>
+                ${mod.descripcion && mod.descripcion !== 'Sin descripción.' ? `<i class="bi bi-info-circle text-muted ms-2" title="${mod.descripcion}"></i>` : ''}
             </div>
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarModuloUI(${index})">
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-warning me-1" onclick="editarModuloUI(${index})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarModuloUI(${index})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        lista.appendChild(li);
+    });
+}
+
+// =================================================================
+// 6. LOGICA DE PRÓXIMOS GRUPOS
+// =================================================================
+function agregarProximoGrupoUI() {
+    const fecha = document.getElementById('nextGroupFecha').value;
+    const horario = document.getElementById('nextGroupHorario').value.trim();
+
+    if (!fecha || !horario) {
+        alert("Ambos campos (Fecha y Horario) son obligatorios.");
+        return;
+    }
+    
+    if (nextGroups.length >= 4) {
+        alert("Solo se pueden agregar hasta 4 próximos grupos.");
+        return;
+    }
+
+    nextGroups.push({ fecha: fecha, horario: horario });
+
+    document.getElementById('nextGroupFecha').value = "";
+    document.getElementById('nextGroupHorario').value = "";
+
+    renderProximosGruposUI();
+}
+
+function eliminarProximoGrupoUI(index) {
+    nextGroups.splice(index, 1);
+    renderProximosGruposUI();
+}
+
+function renderProximosGruposUI() {
+    const lista = document.getElementById('listaProximosGruposUI');
+    lista.innerHTML = "";
+
+    if (nextGroups.length === 0) {
+        lista.innerHTML = '<li class="list-group-item text-muted small text-center bg-light">Sin grupos futuros agregados.</li>';
+        return;
+    }
+
+    nextGroups.forEach((group, index) => {
+        const fechaFormateada = formatDate(group.fecha); 
+        const li = document.createElement('li');
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+            <div>
+                <span class="fw-bold">${fechaFormateada}</span>
+                <span class="badge bg-secondary ms-2">${group.horario}</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarProximoGrupoUI(${index})">
                 <i class="bi bi-trash"></i>
             </button>
         `;
@@ -444,8 +483,40 @@ function renderModulosUI() {
     });
 }
 
+
 // =================================================================
-// 3. AUTENTICACIÓN
+// 1. MANEJO DE VISTAS (SPA)
+// =================================================================
+function showSection(sectionId, isNew = false) {
+    document.querySelectorAll('.spa-section').forEach(s => s.style.display = 'none');
+    document.getElementById(sectionId).style.display = 'block';
+
+    if (sectionId === 'admin-form') {
+        if (isNew) {
+            currentEditId = null;
+            currentModulos = []; 
+            nextGroups = []; 
+            editingModuloIndex = -1; // Resetear modo edición
+            document.getElementById('addModuloButton').textContent = 'Agregar Módulo';
+            document.getElementById('addModuloButton').classList.remove('btn-warning');
+            document.getElementById('addModuloButton').classList.add('btn-success');
+            setModuloInputs();
+
+            renderModulosUI();
+            renderProximosGruposUI(); 
+            document.getElementById('adminFormTitle').innerHTML = 'Crear Nuevo Programa';
+            document.getElementById('adminForm').reset();
+            document.getElementById('adminModalidad').value = 'Presencial'; 
+            toggleHorarioFields('Presencial'); 
+        }
+    }
+    if (sectionId === 'admin-dashboard') loadAdminList();
+    if (sectionId === 'catalogo') cargarProgramas();
+}
+
+
+// =================================================================
+// 3. AUTENTICACIÓN & 4. CATÁLOGO PÚBLICO
 // =================================================================
 function handleAdminAuth() { auth.currentUser ? showSection('admin-dashboard') : showSection('login'); }
 function loginAdmin() {
@@ -460,9 +531,6 @@ auth.onAuthStateChanged(user => {
 });
 function logoutAdmin() { auth.signOut().then(() => showSection('catalogo')); }
 
-// =================================================================
-// 4. CATÁLOGO PÚBLICO
-// =================================================================
 function scrollGallery(dir) {
     const g = document.getElementById('programas-container');
     g.scrollLeft += dir * (g.querySelector('.card-wrapper') ? g.querySelector('.card-wrapper').offsetWidth : 300);
@@ -508,32 +576,75 @@ function filtrarProgramas() {
     else container.innerHTML = filtered.map(crearCardPrograma).join('');
 }
 
-// -----------------------------------------------------------
-// MOSTRAR DETALLE
-// -----------------------------------------------------------
+
+// =================================================================
+// LÓGICA DE DETALLES DEL CURSO (Modal)
+// =================================================================
 function mostrarDetalle(id) {
     const p = allProgramas.find(x => x.id === id);
     if (!p) return;
     const imgUrl = procesarUrlImagen(p.imagenUrl);
     const esAdmin = auth.currentUser;
-
+    const fechaFormateada = formatDate(p.fechaInicio); 
+    const horarioFormateado = formatScheduleString(p.horario); 
+    
+    // --- MÓDULOS CON BOTÓN DE DETALLE (Lista Expandible) ---
     let modulosHtml = '';
     let costoTotal = 0;
     if (p.modulosJson && p.modulosJson.length > 0) {
         modulosHtml += `<h4 class="text-acento mt-4 mb-2">Módulos</h4>
-        <div class="table-responsive"><table class="tabla-tecnologica">
-            <thead><tr><th>Módulo</th><th>Horas</th>${esAdmin ? '<th>Costo (S/)</th>' : ''}</tr></thead><tbody>`;
-        p.modulosJson.forEach(m => {
-            const costo = parseFloat(m.costo) || 0; costoTotal += costo;
-            modulosHtml += `<tr><td>${m.nombre}</td><td>${m.horas}</td>${esAdmin ? `<td>${costo.toFixed(2)}</td>` : ''}</tr>`;
+        <div class="list-group">`;
+        p.modulosJson.forEach((m, index) => {
+            const costo = parseFloat(m.costo) || 0; 
+            costoTotal += costo;
+            
+            // 💡 Nuevo formato de Duración con "horas"
+            const duracion = m.horas.trim();
+            const duracionTexto = duracion ? `${duracion} horas` : 'N/A';
+            
+            // Estructura de visualización en el modal
+            const duracionHtml = `<span class="badge bg-secondary ms-2">${duracionTexto}</span>`;
+            // El costo solo se muestra si es Admin.
+            const costoPublicoHtml = !esAdmin ? '' : `<span class="badge bg-success ms-1">S/ ${costo.toFixed(2)}</span>`;
+
+            // Usamos un botón para mostrar la descripción
+            modulosHtml += `
+            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" data-bs-target="#moduloDetail${index}" aria-expanded="false">
+                <div>
+                    <span class="fw-bold">${m.nombre}</span>
+                    ${duracionHtml}
+                    ${costoPublicoHtml}
+                </div>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+            <div class="collapse p-3 bg-light border-start border-acento" id="moduloDetail${index}">
+                <p class="small mb-0">${m.descripcion || 'Sin descripción detallada.'}</p>
+            </div>
+            `;
         });
-        modulosHtml += `</tbody></table></div>`;
-        if (esAdmin) modulosHtml += `<div class="alert alert-costo text-center">Total: S/ ${costoTotal.toFixed(2)}</div>`;
+        modulosHtml += `</div>`;
+        if (esAdmin) modulosHtml += `<div class="alert alert-costo text-center mt-3">Total: S/ ${costoTotal.toFixed(2)}</div>`;
         modulosHtml += `<p class="text-success small fw-bold"><i class="bi bi-tag"></i> Pregunte por descuentos.</p>`;
     }
 
-    const fechaFormateada = formatDate(p.fechaInicio); 
-    const horarioFormateado = formatScheduleString(p.horario); 
+
+    // --- GRUPOS FUTUROS ---
+    let gruposFuturosHtml = '';
+    if (p.proximosGrupos && p.proximosGrupos.length > 0) {
+        gruposFuturosHtml = `
+            <hr class="my-2">
+            <p class="mb-1 small fw-bold text-acento"><i class="bi bi-calendar-range"></i> Próximos Inicios:</p>
+            <ul class="list-unstyled small mb-0">
+        `;
+        p.proximosGrupos.forEach(group => {
+            const fechaF = formatDate(group.fecha);
+            if (group.fecha !== p.fechaInicio) {
+                gruposFuturosHtml += `<li>• ${fechaF}: <strong>${group.horario}</strong></li>`;
+            }
+        });
+        gruposFuturosHtml += `</ul>`;
+    }
 
     document.getElementById('detalleModalLabel').textContent = p.titulo;
     document.getElementById('detalle-contenido').innerHTML = `
@@ -545,9 +656,8 @@ function mostrarDetalle(id) {
                     <p class="mb-1"><i class="bi bi-geo-alt text-acento"></i> ${p.modalidad||'-'}</p>
                     <hr>
                     <p class="mb-1"><i class="bi bi-calendar-event text-acento"></i> Inicio: <strong>${fechaFormateada}</strong></p>
-                    
                     <p class="mb-0"><i class="bi bi-stopwatch text-acento"></i> Horario: <strong>${horarioFormateado || 'Por definir'}</strong></p>
-                    
+                    ${gruposFuturosHtml} 
                 </div>
             </div>
             <div class="col-md-7">
@@ -555,9 +665,9 @@ function mostrarDetalle(id) {
                 <p>${p.descripcionDetallada || p.descripcionCorta}</p>
                 ${modulosHtml}
                 ${p.componentesOpcionales ? `<div class="alert alert-dark border border-success mt-3"><strong class="text-acento">Incluye:</strong> ${p.componentesOpcionales}</div>` : ''}
-                <h4 class="text-acento mt-4">Dirigido A</h4>
+                <h4 class="text-acento mt-4">Dirigido a</h4>
                 <p style="white-space: pre-line;">${p.dirigidoA || 'Consultar.'}</p>
-                <h4 class="text-acento mt-4">Temario</h4>
+                <h4 class="text-acento mt-4">Consideraciones</h4>
                 <p style="white-space: pre-line;">${p.contenido || 'Ver módulos.'}</p>
             </div>
         </div>
@@ -569,9 +679,6 @@ function mostrarDetalle(id) {
     new bootstrap.Modal(document.getElementById('detalleModal')).show();
 }
 
-// =================================================================
-// 5. ADMIN CRUD
-// =================================================================
 function loadAdminList() {
     db.collection('programas').get().then(snap => {
         let html = `<table class="table table-hover"><thead><tr><th>Curso</th><th>Inicio</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`;
@@ -593,7 +700,6 @@ function cargarProgramaParaEdicion(id) {
         currentEditId = id;
         document.getElementById('adminFormTitle').innerHTML = `Editar: ${p.titulo}`;
         
-        // Mapear campos básicos
         ['Titulo','Categoria','Estado','ImagenUrl','Descripcion','DescripcionDetallada','Contenido','Duracion','Modalidad','FechaInicio','Horario','ComponentesOpcionales','DirigidoA','Tags'].forEach(f => {
             let fieldName = f.charAt(0).toLowerCase() + f.slice(1);
             if (fieldName === 'descripcion') {
@@ -606,25 +712,36 @@ function cargarProgramaParaEdicion(id) {
             }
         });
         
-        // Cargar módulos
+        // 1. Cargar módulos
         currentModulos = p.modulosJson || [];
         renderModulosUI();
         
-        // 1. Cargar la modalidad en el select
+        // 2. Cargar Próximos Grupos
+        nextGroups = p.proximosGrupos || [];
+        renderProximosGruposUI();
+
+        // 3. Cargar la modalidad en el select
         const modalidadSelect = document.getElementById('adminModalidad');
         modalidadSelect.value = p.modalidad || 'Presencial';
 
-        // 2. Resetear la vista y mostrar el generador correcto con la modalidad cargada.
+        // 4. Resetear la vista y mostrar el generador correcto con la modalidad cargada.
         toggleHorarioFields(modalidadSelect.value);
         
-        // 3. Si el horario NO es vacío, lo parseamos para poblar la interfaz gráfica.
+        // 5. Si el horario NO es vacío, lo parseamos para poblar la interfaz gráfica.
         if (p.horario && p.horario.length > 0) {
             parseHorarioString(p.horario, modalidadSelect.value);
         }
 
-        // 4. Re-renderizar los botones de día y regenerar la cadena final.
+        // 6. Re-renderizar los botones de día y regenerar la cadena final.
         setupHorarioButtons(); 
         generateHorarioString(); 
+        
+        // 7. Resetear el modo edición de módulos
+        editingModuloIndex = -1;
+        document.getElementById('addModuloButton').textContent = 'Agregar Módulo';
+        document.getElementById('addModuloButton').classList.remove('btn-warning');
+        document.getElementById('addModuloButton').classList.add('btn-success');
+        setModuloInputs();
 
         showSection('admin-form');
     });
@@ -656,6 +773,7 @@ async function guardarCambiosEdicion() {
         dirigidoA: document.getElementById('adminDirigidoA').value,
         tags: document.getElementById('adminTags').value.toLowerCase(),
         modulosJson: currentModulos, 
+        proximosGrupos: nextGroups,
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
     };
 
@@ -672,11 +790,14 @@ function eliminarPrograma(id) {
     }
 }
 
-// Inicialización
+// =================================================================
+// INICIALIZACIÓN
+// =================================================================
 document.addEventListener('DOMContentLoaded', () => {
     cargarProgramas();
     setupHorarioButtons(); 
     
+    // Lógica de arrastrar para la galería horizontal
     const g = document.getElementById('programas-container');
     if(g) {
         g.addEventListener('mousedown', e => { isDragging=true; g.classList.add('active'); startPos=e.clientX; scrollLeft=g.scrollLeft; });

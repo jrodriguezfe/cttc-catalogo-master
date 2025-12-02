@@ -118,231 +118,252 @@
             </a>
             <h2 class="mb-4 display-5" id="adminFormTitle">Gestión de Programa</h2>
             
-            <div class="card p-4 shadow-sm">
-                <form id="adminForm">
-                    <h4 class="mb-3 text-acento">Datos Básicos</h4>
-                    <div class="mb-3">
-                        <label class="form-label">Título</label>
-                        <input type="text" class="form-control" id="adminTitulo" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" id="adminCategoria" required>
-                                <option value="Diseño">Diseño</option>
-                                <option value="Confección">Confección</option>
-                                <option value="Tejido">Tejido</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Estado</label>
-                            <select class="form-select" id="adminEstado" required>
-                                <option value="Activo">Activo</option>
-                                <option value="Inactivo">Inactivo</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">URL de Imagen</label>
-                        <input type="url" class="form-control" id="adminImagenUrl" placeholder="https://..." required>
-                        <small class="text-muted">Pegue el enlace directo de la imagen (debe empezar con https://).</small>
-                    </div>
-
-                    <h4 class="mb-3 text-acento">Contenido</h4>
-                    <div class="mb-3">
-                        <label class="form-label">Descripción Corta</label>
-                        <textarea class="form-control" id="adminDescripcion" rows="2" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Descripción Detallada</label>
-                        <textarea class="form-control" id="adminDescripcionDetallada" rows="3"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">Beneficios</label>
-                        <textarea class="form-control" id="adminContenido" rows="4"></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Gestión de Módulos</label>
-                        <div class="card p-3 bg-light border-0 mb-3">
-                            <div class="row g-2 align-items-end">
-                                <div class="col-md-5">
-                                    <label class="small text-muted">Nombre del Módulo</label>
-                                    <input type="text" id="modInputNombre" class="form-control form-control-sm" placeholder="Ej: Módulo I: Fundamentos">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8"> 
+                    <div class="card p-4 shadow-sm">
+                        <form id="adminForm">
+                            <h4 class="mb-3 text-acento">Datos Básicos</h4>
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" class="form-control" id="adminTitulo" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Categoría</label>
+                                    <select class="form-select" id="adminCategoria" required>
+                                        <option value="Diseño">Diseño</option>
+                                        <option value="Confección">Confección</option>
+                                        <option value="Tejido">Tejido</option>
+                                    </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="small text-muted">Horas</label>
-                                    <input type="text" id="modInputHoras" class="form-control form-control-sm" placeholder="Ej: 20h">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="small text-muted">Costo (S/)</label>
-                                    <input type="number" id="modInputCosto" class="form-control form-control-sm" placeholder="0.00">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-sm btn-success w-100" onclick="agregarModuloUI()">
-                                        <i class="bi bi-plus-lg"></i> Agregar
-                                    </button>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Estado</label>
+                                    <select class="form-select" id="adminEstado" required>
+                                        <option value="Activo">Activo</option>
+                                        <option value="Inactivo">Inactivo</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <ul id="listaModulosUI" class="list-group mb-2">
-                            <li class="list-group-item text-muted small text-center bg-light">Sin módulos agregados aún.</li>
-                        </ul>
-                        <small class="text-muted">Agregue los módulos uno por uno. Se guardarán automáticamente al guardar el programa.</small>
-                    </div>
+                            <div class="mb-4">
+                                <label class="form-label">URL de Imagen</label>
+                                <input type="url" class="form-control" id="adminImagenUrl" placeholder="https://..." required>
+                                <small class="text-muted">Pegue el enlace directo de la imagen (debe empezar con https://).</small>
+                            </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Componentes Adicionales (Texto)</label>
-                        <textarea class="form-control" id="adminComponentesOpcionales" rows="2" placeholder="Ej: Incluye acceso a laboratorio..."></textarea>
-                    </div>
+                            <h4 class="mb-3 text-acento">Contenido</h4>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción Corta</label>
+                                <textarea class="form-control" id="adminDescripcion" rows="2" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción Detallada</label>
+                                <textarea class="form-control" id="adminDescripcionDetallada" rows="3"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Consideraciones</label>
+                                <textarea class="form-control" id="adminContenido" rows="4"></textarea>
+                            </div>
 
-                    <h4 class="mb-3 text-acento">Detalles</h4>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha Inicio</label>
-                            <input type="date" class="form-control" id="adminFechaInicio">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Modalidad</label>
-                            <select class="form-select" id="adminModalidad" onchange="toggleHorarioFields()">
-                                <option value="Presencial">Presencial</option>
-                                <option value="Online">Online</option>
-                                <option value="Semipresencial">Semipresencial</option>
-                            </select>
-                        </div>
-                    </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gestión de Módulos</label>
+                                <div class="card p-3 bg-light border-0 mb-3">
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-4">
+                                            <label class="small text-muted">Nombre del Módulo</label>
+                                            <input type="text" id="modInputNombre" class="form-control form-control-sm" placeholder="Ej: Módulo I: Fundamentos">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="small text-muted">Descripción Breve</label>
+                                            <input type="text" id="modInputDescripcion" class="form-control form-control-sm" placeholder="Ej: Introducción a la técnica...">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="small text-muted">Horas</label>
+                                            <input type="text" id="modInputHoras" class="form-control form-control-sm" placeholder="Ej: 20h">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="small text-muted">Costo (S/)</label>
+                                            <input type="number" id="modInputCosto" class="form-control form-control-sm" placeholder="0.00">
+                                        </div>
+                                        <div class="col-12 mt-2 text-end">
+                                            <button type="button" class="btn btn-sm btn-success" id="addModuloButton" onclick="agregarModuloUI()">
+                                                <i class="bi bi-plus-lg"></i> Agregar Módulo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul id="listaModulosUI" class="list-group mb-2">
+                                    <li class="list-group-item text-muted small text-center bg-light">Sin módulos agregados aún.</li>
+                                </ul>
+                                <small class="text-muted">Agregue los módulos uno por uno. Se guardarán automáticamente al guardar el programa.</small>
+                            </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Duración Total</label>
-                            <input type="text" class="form-control" id="adminDuracion">
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Horario</label>
+                            <div class="mb-4">
+                                <label class="form-label">Componentes Adicionales (Texto)</label>
+                                <textarea class="form-control" id="adminComponentesOpcionales" rows="2" placeholder="Ej: Incluye acceso a laboratorio..."></textarea>
+                            </div>
+
+                            <h4 class="mb-3 text-acento">Detalles y Horario</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Fecha Inicio (Principal)</label>
+                                    <input type="date" class="form-control" id="adminFechaInicio">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Modalidad</label>
+                                    <select class="form-select" id="adminModalidad" onchange="toggleHorarioFields()">
+                                        <option value="Presencial">Presencial</option>
+                                        <option value="Online">Online</option>
+                                        <option value="Semipresencial">Semipresencial</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Duración Total</label>
+                                    <input type="text" class="form-control" id="adminDuracion">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Próximos Grupos (Hasta 4)</label>
+                                    <div class="card p-3 bg-light border-0 mb-3">
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-md-4">
+                                                <label class="small text-muted">Fecha Inicio</label>
+                                                <input type="date" id="nextGroupFecha" class="form-control form-control-sm">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small text-muted">Horario (Texto)</label>
+                                                <input type="text" id="nextGroupHorario" class="form-control form-control-sm" placeholder="Ej: Sáb 9am - 1pm">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-sm btn-success w-100" onclick="agregarProximoGrupoUI()">
+                                                    <i class="bi bi-plus-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul id="listaProximosGruposUI" class="list-group mb-2">
+                                        <li class="list-group-item text-muted small text-center bg-light">Sin grupos futuros agregados.</li>
+                                    </ul>
+                                    <small class="text-muted">Máximo 4 grupos futuros.</small>
+                                </div>
+                                
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Horario Principal</label>
+                                    
+                                    <input type="hidden" id="adminHorario" value=""> 
+
+                                    <div id="horarioSemipresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                                        <p class="small fw-bold text-muted mb-1">Configuración Semipresencial:</p>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Horario Online:</label>
+                                            <div id="onlineDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                            
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">De</span>
+                                                <input type="time" id="onlineStartHour" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                                <span class="input-group-text">A</span>
+                                                <input type="time" id="onlineEndHour" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Horario Presencial:</label>
+                                            <div id="presencialDaysContainer" class="d-flex flex-wrap mb-2"></div>
+                                            
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">De</span>
+                                                <input type="time" id="presencialStartHour" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                                <span class="input-group-text">A</span>
+                                                <input type="time" id="presencialEndHour" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                            </div>
+                                        </div>
+                                        
+                                        </div>
+
+                                    <div id="horarioOnlineGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                                         <p class="small fw-bold text-muted mb-1">Configuración Online (Doble Bloque):</p>
+                                         
+                                         <h6 class="text-acento mt-2">Bloque 1 (Ej: Noches)</h6>
+                                         <div class="mb-3">
+                                            <label class="form-label small fw-bold">Horario Online (Días):</label>
+                                            <div id="onlineSimpleDaysContainer1" class="d-flex flex-wrap mb-2"></div>
+                                             
+                                             <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">De</span>
+                                                <input type="time" id="onlineSimpleStartHour1" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                                <span class="input-group-text">A</span>
+                                                <input type="time" id="onlineSimpleEndHour1" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                             </div>
+                                        </div>
+
+                                         <h6 class="text-acento mt-4">Bloque 2 (Ej: Fines de Semana)</h6>
+                                         <div class="mb-3">
+                                            <label class="form-label small fw-bold">Horario Online (Días):</label>
+                                            <div id="onlineSimpleDaysContainer2" class="d-flex flex-wrap mb-2"></div>
+                                             
+                                             <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">De</span>
+                                                <input type="time" id="onlineSimpleStartHour2" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                                <span class="input-group-text">A</span>
+                                                <input type="time" id="onlineSimpleEndHour2" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                             </div>
+                                        </div>
+                                        
+                                        </div>
+
+                                    <div id="horarioPresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                                         <p class="small fw-bold text-muted mb-1">Configuración Presencial (Doble Bloque):</p>
+
+                                         <h6 class="text-acento mt-2">Bloque 1 (Ej: Noches)</h6>
+                                         <div class="mb-3">
+                                            <label class="form-label small fw-bold">Horario Presencial (Días):</label>
+                                            <div id="presencialSimpleDaysContainer1" class="d-flex flex-wrap mb-2"></div>
+                                             
+                                             <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">De</span>
+                                                <input type="time" id="presencialSimpleStartHour1" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                                <span class="input-group-text">A</span>
+                                                <input type="time" id="presencialSimpleEndHour1" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                             </div>
+                                        </div>
+
+                                         <h6 class="text-acento mt-4">Bloque 2 (Ej: Fines de Semana)</h6>
+                                         <div class="mb-3">
+                                            <label class="form-label small fw-bold">Horario Presencial (Días):</label>
+                                            <div id="presencialSimpleDaysContainer2" class="d-flex flex-wrap mb-2"></div>
+                                             
+                                             <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">De</span>
+                                                <input type="time" id="presencialSimpleStartHour2" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                                <span class="input-group-text">A</span>
+                                                <input type="time" id="presencialSimpleEndHour2" class="form-control" value="00:00" onchange="generateHorarioString()">
+                                             </div>
+                                        </div>
+                                        
+                                        </div>
+
+                                    </div>
+                            </div>
                             
-                            <input type="hidden" id="adminHorario" value=""> 
-
-                            <div id="horarioSemipresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                                <p class="small fw-bold text-muted mb-1">Configuración Semipresencial:</p>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label small fw-bold">Horario Online:</label>
-                                    <div id="onlineDaysContainer" class="d-flex flex-wrap mb-2"></div>
-                                    
-                                    <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">De</span>
-                                        <input type="number" id="onlineStartHour" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <span class="input-group-text">A</span>
-                                        <input type="number" id="onlineEndHour" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineStartHour', 0.25)">+</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineStartHour', 0.25)">-</button>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label small fw-bold">Horario Presencial:</label>
-                                    <div id="presencialDaysContainer" class="d-flex flex-wrap mb-2"></div>
-                                    
-                                    <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">De</span>
-                                        <input type="number" id="presencialStartHour" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <span class="input-group-text">A</span>
-                                        <input type="number" id="presencialEndHour" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialStartHour', 0.25)">+</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialStartHour', 0.25)">-</button>
-                                    </div>
-                                </div>
-                                
-                                </div>
-
-                            <div id="horarioOnlineGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                                 <p class="small fw-bold text-muted mb-1">Configuración Online (Doble Bloque):</p>
-                                 
-                                 <h6 class="text-acento mt-2">Bloque 1 (Ej: Noches)</h6>
-                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold">Horario Online (Días):</label>
-                                    <div id="onlineSimpleDaysContainer1" class="d-flex flex-wrap mb-2"></div>
-                                     
-                                     <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">De</span>
-                                        <input type="number" id="onlineSimpleStartHour1" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <span class="input-group-text">A</span>
-                                        <input type="number" id="onlineSimpleEndHour1" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineSimpleStartHour1', 0.25)">+</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour1', 0.25)">-</button>
-                                     </div>
-                                </div>
-
-                                 <h6 class="text-acento mt-4">Bloque 2 (Ej: Fines de Semana)</h6>
-                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold">Horario Online (Días):</label>
-                                    <div id="onlineSimpleDaysContainer2" class="d-flex flex-wrap mb-2"></div>
-                                     
-                                     <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">De</span>
-                                        <input type="number" id="onlineSimpleStartHour2" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <span class="input-group-text">A</span>
-                                        <input type="number" id="onlineSimpleEndHour2" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('onlineSimpleStartHour2', 0.25)">+</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('onlineSimpleStartHour2', 0.25)">-</button>
-                                     </div>
-                                </div>
-                                
-                                </div>
-
-                            <div id="horarioPresencialGenerator" class="schedule-config-container" style="display:none; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                                 <p class="small fw-bold text-muted mb-1">Configuración Presencial (Doble Bloque):</p>
-
-                                 <h6 class="text-acento mt-2">Bloque 1 (Ej: Noches)</h6>
-                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold">Horario Presencial (Días):</label>
-                                    <div id="presencialSimpleDaysContainer1" class="d-flex flex-wrap mb-2"></div>
-                                     
-                                     <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">De</span>
-                                        <input type="number" id="presencialSimpleStartHour1" class="form-control" min="0" max="23.75" step="0.25" value="18.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <span class="input-group-text">A</span>
-                                        <input type="number" id="presencialSimpleEndHour1" class="form-control" min="0" max="23.75" step="0.25" value="20.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialSimpleStartHour1', 0.25)">+</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour1', 0.25)">-</button>
-                                     </div>
-                                </div>
-
-                                 <h6 class="text-acento mt-4">Bloque 2 (Ej: Fines de Semana)</h6>
-                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold">Horario Presencial (Días):</label>
-                                    <div id="presencialSimpleDaysContainer2" class="d-flex flex-wrap mb-2"></div>
-                                     
-                                     <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">De</span>
-                                        <input type="number" id="presencialSimpleStartHour2" class="form-control" min="0" max="23.75" step="0.25" value="9.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <span class="input-group-text">A</span>
-                                        <input type="number" id="presencialSimpleEndHour2" class="form-control" min="0" max="23.75" step="0.25" value="13.00" onchange="formatTimeInput(this); generateHorarioString()">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="incrementHour('presencialSimpleStartHour2', 0.25)">+</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="decrementHour('presencialSimpleStartHour2', 0.25)">-</button>
-                                     </div>
-                                </div>
-                                
-                                </div>
-
+                            <div class="mb-3">
+                                <label class="form-label">Dirigido A</label>
+                                <textarea class="form-control" id="adminDirigidoA" rows="2"></textarea>
                             </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Dirigido A</label>
-                        <textarea class="form-control" id="adminDirigidoA" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tags</label>
-                        <input type="text" class="form-control" id="adminTags">
-                    </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="adminTags">
+                            </div>
 
-                    <button type="button" class="btn btn-acento w-100 mt-3" onclick="guardarCambiosEdicion()">Guardar Programa</button>
-                </form>
+                            <button type="button" class="btn btn-acento w-100 mt-3" onclick="guardarCambiosEdicion()">Guardar Programa</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </section>
+            </section>
         
     </main>
 
