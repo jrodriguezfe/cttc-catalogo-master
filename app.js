@@ -626,6 +626,7 @@ function mostrarDetalle(id) {
         modulosHtml += `</div>`;
         if (esAdmin) modulosHtml += `<div class="alert alert-costo text-center mt-3">Total: S/ ${costoTotal.toFixed(2)}</div>`;
         modulosHtml += `<p class="text-success small fw-bold"><i class="bi bi-tag"></i> Pregunte por descuentos.</p>`;
+        modulosHtml += `<p class="text-success small fw-bold"><i class="bi bi-tag"></i> Todos los pagos son a nombre de SENATI en sus cuentas autorizadas.</p>`;
     }
 
 
