@@ -33,6 +33,11 @@
                             <i class="bi bi-person-circle me-1"></i> Admin CTTC
                         </button>
                     </li>
+                    <li class="nav-item ms-2">
+                        <a id="programacionButton" class="btn btn-acento" href="https://jrodriguezfe.github.io/programacion_cttc/" target="_blank" style="display:none;">
+                            <i class="bi bi-calendar-event me-1"></i> Programación académica
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -105,9 +110,14 @@
             <h2 class="mb-4 display-5">Panel <span class="text-acento">Admin CTTC</span></h2>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <p class="lead">Gestión de programas.</p>
-                <button class="btn btn-acento" onclick="showSection('admin-form', true)">
-                    <i class="bi bi-plus-circle me-1"></i> Crear Nuevo
-                </button>
+                <div>
+                    <button class="btn btn-acento" onclick="showSection('admin-form', true)">
+                        <i class="bi bi-plus-circle me-1"></i> Crear Nuevo
+                    </button>
+                    <a id="programacionAdminButton" class="btn btn-acento ms-2" href="https://jrodriguezfe.github.io/programacion_cttc/" target="_blank" style="display:none;">
+                        <i class="bi bi-calendar-event me-1"></i> Programación académica
+                    </a>
+                </div>
             </div>
             <div class="card p-4 shadow-sm">
                 <div id="admin-list-container" class="table-responsive"></div>

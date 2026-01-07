@@ -526,10 +526,21 @@ function loginAdmin() {
 }
 auth.onAuthStateChanged(user => {
     const btn = document.getElementById('adminAuthButton');
-    if (user) { btn.innerHTML = '<i class="bi bi-gear-fill me-1"></i> Admin CTTC'; btn.onclick = () => showSection('admin-dashboard'); }
-    else { btn.innerHTML = '<i class="bi bi-person-circle me-1"></i> Admin CTTC'; btn.onclick = handleAdminAuth; }
+    const progBtn = document.getElementById('programacionButton');
+    const progAdminBtn = document.getElementById('programacionAdminButton');
+    if (user) {
+        btn.innerHTML = '<i class="bi bi-gear-fill me-1"></i> Admin CTTC';
+        btn.onclick = () => showSection('admin-dashboard');
+        if (progBtn) { progBtn.style.display = 'inline-block'; progBtn.href = 'https://jrodriguezfe.github.io/programacion_cttc/'; progBtn.target = '_blank'; }
+        if (progAdminBtn) { progAdminBtn.style.display = 'inline-block'; progAdminBtn.href = 'https://jrodriguezfe.github.io/programacion_cttc/'; progAdminBtn.target = '_blank'; }
+    } else {
+        btn.innerHTML = '<i class="bi bi-person-circle me-1"></i> Admin CTTC';
+        btn.onclick = handleAdminAuth;
+        if (progBtn) progBtn.style.display = 'none';
+        if (progAdminBtn) progAdminBtn.style.display = 'none';
+    }
 });
-function logoutAdmin() { auth.signOut().then(() => showSection('catalogo')); }
+function logoutAdmin() { auth.signOut().then(() => { showSection('catalogo'); const progBtn = document.getElementById('programacionButton'); const progAdminBtn = document.getElementById('programacionAdminButton'); if (progBtn) progBtn.style.display = 'none'; if (progAdminBtn) progAdminBtn.style.display = 'none'; }); }
 
 function scrollGallery(dir) {
     const g = document.getElementById('programas-container');
