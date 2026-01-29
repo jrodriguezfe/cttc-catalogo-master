@@ -685,7 +685,7 @@ function mostrarDetalle(id) {
         </div>
     `;
 
-    let btns = `<a href="https://wa.me/51950671257?text=Info ${p.titulo}" target="_blank" class="btn btn-acento"><i class="bi bi-whatsapp"></i> Inscribirse</a>`;
+    let btns = `<a href="https://wa.me/51954622231?text=Info ${p.titulo}" target="_blank" class="btn btn-acento"><i class="bi bi-whatsapp"></i> Inscribirse</a>`;
     if (esAdmin) btns += `<div class="ms-auto"><button class="btn btn-outline-dark me-2" onclick="cargarProgramaParaEdicion('${p.id}')" data-bs-dismiss="modal">Editar</button><button class="btn btn-outline-danger" onclick="eliminarPrograma('${p.id}')" data-bs-dismiss="modal">Eliminar</button></div>`;
     document.getElementById('detalle-footer').innerHTML = btns;
     new bootstrap.Modal(document.getElementById('detalleModal')).show();
