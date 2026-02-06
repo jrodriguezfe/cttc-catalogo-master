@@ -699,7 +699,11 @@ function loadAdminList() {
             const inicioFormateado = formatDate(p.fechaInicio); 
             
             html += `<tr><td>${p.titulo}</td><td>${inicioFormateado || '-'}</td><td class="${p.estado==='Activo'?'text-success':'text-danger'} fw-bold">${p.estado}</td>
-            <td><button class="btn btn-sm btn-outline-dark me-1" onclick="cargarProgramaParaEdicion('${p.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-outline-danger" onclick="eliminarPrograma('${p.id}')"><i class="bi bi-trash"></i></button></td></tr>`;
+            <td>
+                <button class="btn btn-sm btn-outline-dark me-1" onclick="cargarProgramaParaEdicion('${p.id}')" title="Editar"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="clonarPrograma('${p.id}')" title="Clonar"><i class="bi bi-files"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarPrograma('${p.id}')" title="Eliminar"><i class="bi bi-trash"></i></button>
+            </td></tr>`;
         });
         document.getElementById('admin-list-container').innerHTML = html + `</tbody></table><button class="btn btn-danger btn-sm" onclick="logoutAdmin()">Cerrar Sesión</button>`;
     });
@@ -794,6 +798,24 @@ async function guardarCambiosEdicion() {
         else await db.collection('programas').add(data);
         alert("Programa guardado."); showSection('admin-dashboard');
     } catch(e) { alert("Error: " + e.message); }
+}
+
+function clonarPrograma(id) {
+    if (!confirm("¿Deseas clonar este programa? Se creará una copia independiente.")) return;
+    db.collection('programas').doc(id).get().then(doc => {
+        if (!doc.exists) return;
+        const data = doc.data();
+        const newData = {
+            ...data,
+            titulo: data.titulo + " (Copia)",
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        return db.collection('programas').add(newData);
+    }).then(() => {
+        alert("Programa clonado con éxito.");
+        loadAdminList();
+        cargarProgramas();
+    }).catch(e => alert("Error al clonar: " + e.message));
 }
 
 function eliminarPrograma(id) {
